@@ -13,11 +13,22 @@
 
 #ck-source > #crop-box {
   border: white 1px solid;
+  cursor: pointer;
   height: 50px;
   left: 0px;
   position: relative;
   top: 0px;
   width: 50px;
+}
+
+#ck-source > #crop-box > #resize {
+  border: yellow 1px solid;
+  bottom: 0px;
+  cursor: se-resize;
+  height: 10px;
+  position: absolute;
+  right: 0px;
+  width: 10px;
 }
 
 #ck-output {

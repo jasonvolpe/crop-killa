@@ -8,7 +8,9 @@
     <body id="crop-killa">
     <h1>crop killa test</h1>
         <div id="ck-source">
-            <div id="crop-box"></div>
+            <div id="crop-box">
+                <div id="resize"></div>
+            </div>
             source
         </div>
 
@@ -44,8 +46,8 @@
         var _pageY;
         var _sourceLeft;
         var _sourceTop;
-        var _cropBoxStartLeft;
-        var _cropBoxStartTop;
+        var _cropBoxStartLeftDiff;
+        var _cropBoxStartTopDiff;
 
         function sourceImageLoaded() {
             var w = this.width;
@@ -87,6 +89,7 @@
         $(window).on("mouseup", function(e){
             _mouseDown = false;
             _moveCropBox = false;
+            _resizeCropBox = false;
 
             // test
             $('#mouse').text("up");
@@ -101,15 +104,42 @@
             _sourceHeight = $(this).height();
 
             if (_moveCropBox) {
-                var innerX = _pageX - _sourceLeft - 20;
-                var innerY = _pageY - _sourceTop - 20;
+                var innerX = _pageX - _sourceLeft - _cropBoxStartLeftDiff;
+                var innerY = _pageY - _sourceTop - _cropBoxStartTopDiff;
                 $('#crop-box').css('left', innerX + 'px');
                 $('#crop-box').css('top', innerY + 'px');
 
                 // change output position
                 $('#ck-output').css('background-position', -innerX*_zoom + 'px ' + -innerY*_zoom + 'px');
+
+                // test
+
             };
-            
+
+            if (_resizeCropBox) {
+                var cropLeft = $('#crop-box').position().left - _sourceLeft;
+                var cropTop = $('#crop-box').position().top - _sourceTop;
+                var cropW = _pageX - _sourceLeft - cropLeft + 5; // +5 to center cursor on resizer
+                var cropH = _pageY - _sourceTop - cropTop + 5;
+
+
+
+                $('#crop-box').css('width', Math.max(cropW, cropH));
+                $('#crop-box').css('height', Math.max(cropW, cropH));
+
+                updateOutputZoom($('#ck-source').width(), $('#ck-source').height(),
+                    $('#crop-box').width(), $('#crop-box').height(),
+                    _outputX, _outputY);
+
+
+                // change output position
+                $('#ck-output').css('background-position', -cropLeft*_zoom + 'px ' + -cropTop*_zoom + 'px');
+
+                // test
+                console.log('cropLT', cropLeft, cropTop);
+
+            }
+
             $('#pagex').text(_pageX);
             $('#pagey').text(_pageY);
 
@@ -119,26 +149,28 @@
 
         $('#ck-source').on("mousedown", function(e){
 
-            _cropBoxStartLeft = $('#crop-box').position().left;
-            _cropBoxStartTop = $('#crop-box').position().top;
+            _cropBoxStartLeftDiff = e.pageX - $('#crop-box').position().left;
+            _cropBoxStartTopDiff = e.pageY - $('#crop-box').position().top;
 
             updateOutputZoom($('#ck-source').width(), $('#ck-source').height(),
                     $('#crop-box').width(), $('#crop-box').height(),
                     _outputX, _outputY);
 
-            if (e.target.id === 'crop-box') {
+
+
+            if (e.target.id === 'resize') {
+                _resizeCropBox = true;
+            } else if (e.target.id === 'crop-box') {
                 _moveCropBox = true;
             };
-
-
 
             e.preventDefault();
 
             // test
             $('#mouse').text("down");
             $('#target').text(e.target.id);
-            $('#cropleft').text(_cropBoxStartLeft);
-            $('#croptop').text(_cropBoxStartTop);
+            $('#cropleft').text(_cropBoxStartLeftDiff);
+            $('#croptop').text(_cropBoxStartTopDiff);
         });
 
         var srcImage = new Image();
