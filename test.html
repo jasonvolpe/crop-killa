@@ -1,0 +1,151 @@
+<html>
+    <head>
+        <title>crop killa</title>
+        <script type="text/javascript" src="js/jquery-1.7.1.js"></script>
+        <script type="text/javascript" src="js/crop-killa.js"></script>
+        <link href="css/crop-killa-style.css" type="text/css" rel="stylesheet" />
+    </head>
+    <body id="crop-killa">
+    <h1>crop killa test</h1>
+        <div id="ck-source">
+            <div id="crop-box"></div>
+            source
+        </div>
+
+        <div id="ck-output">
+            output
+        </div>
+
+        <div id="test-console">
+            <p>page x: <span id="pagex"></span></p>
+            <p>page y: <span id="pagey"></span></p>
+            <p>mouse x: <span id="mousex"></span></p>
+            <p>mouse y: <span id="mousey"></span></p>
+            <p>mouse: <span id="mouse"></span> target: <span id="target"></span></p>
+            <p>crop left: <span id="cropleft"></span></p>
+            <p>crop top: <span id="croptop"></span></p>
+            <p>zoom: <span id="zoom"></span></p>
+        </div>
+
+    <script type="text/javascript">
+
+        /*
+        test setup
+         */
+        var srcImageUrl = "test.png";
+        var _outputX = 200;
+        var _outputY = _outputX;
+        var _mouseDown = false;
+        var _moveCropBox = false;
+        var _resizeCropBox = false;
+        var _zoom = 1.0;
+
+        var _pageX;
+        var _pageY;
+        var _sourceLeft;
+        var _sourceTop;
+        var _cropBoxStartLeft;
+        var _cropBoxStartTop;
+
+        function sourceImageLoaded() {
+            var w = this.width;
+            var h = this.height;
+            console.log(w, h);
+
+            resizeFrames(this);
+            setImages(this);
+        };
+
+        function resizeFrames(image) {
+            $('#ck-source').height(image.height);
+            $('#ck-source').width(image.width);
+
+            $('#ck-output').height(_outputY);
+            $('#ck-output').width(_outputX);
+        }
+
+        function setImages(image) {
+            console.log(image);
+            $('#ck-source, #ck-output').css('background-image', "url(" + image.src + ")");
+        };
+
+        function updateOutputZoom(srcX, srcY, cropX, cropY, outX, outY) {
+            var srcMin = Math.min(srcX, srcY);
+            var cropMin = Math.min(cropX, cropY);
+
+            zoom = outX / cropX;
+            _zoom = zoom;
+            $('#ck-output').css('background-size', srcX * _zoom + 'px ' + srcY * _zoom + 'px');
+
+            // test
+            $('#zoom').text(zoom*100);
+        }
+
+        /*
+        mouse events
+         */
+        $(window).on("mouseup", function(e){
+            _mouseDown = false;
+            _moveCropBox = false;
+
+            // test
+            $('#mouse').text("up");
+        });
+        
+        $('#ck-source').on("mousemove", function(e){
+            _pageX = e.pageX;
+            _pageY = e.pageY;
+            _sourceLeft = $(this).position().left;
+            _sourceTop = $(this).position().top;
+            _sourceWidth = $(this).width();
+            _sourceHeight = $(this).height();
+
+            if (_moveCropBox) {
+                var innerX = _pageX - _sourceLeft - 20;
+                var innerY = _pageY - _sourceTop - 20;
+                $('#crop-box').css('left', innerX + 'px');
+                $('#crop-box').css('top', innerY + 'px');
+
+                // change output position
+                $('#ck-output').css('background-position', -innerX*_zoom + 'px ' + -innerY*_zoom + 'px');
+            };
+            
+            $('#pagex').text(_pageX);
+            $('#pagey').text(_pageY);
+
+            $('#mousex').text(_pageX - _sourceLeft);
+            $('#mousey').text(_pageY - _sourceTop);
+        });
+
+        $('#ck-source').on("mousedown", function(e){
+
+            _cropBoxStartLeft = $('#crop-box').position().left;
+            _cropBoxStartTop = $('#crop-box').position().top;
+
+            updateOutputZoom($('#ck-source').width(), $('#ck-source').height(),
+                    $('#crop-box').width(), $('#crop-box').height(),
+                    _outputX, _outputY);
+
+            if (e.target.id === 'crop-box') {
+                _moveCropBox = true;
+            };
+
+
+
+            e.preventDefault();
+
+            // test
+            $('#mouse').text("down");
+            $('#target').text(e.target.id);
+            $('#cropleft').text(_cropBoxStartLeft);
+            $('#croptop').text(_cropBoxStartTop);
+        });
+
+        var srcImage = new Image();
+        srcImage.onload = sourceImageLoaded;
+        srcImage.src = srcImageUrl;
+
+
+    </script>
+    </body>
+</html>

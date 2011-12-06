@@ -1,0 +1,25 @@
+*,
+#crop-killa {
+  margin: 0px;
+  padding: 0px;
+}
+
+#ck-output, 
+#ck-source {
+  color: white;
+  background-repeat: no-repeat;
+  margin: 0px;
+}
+
+#ck-source > #crop-box {
+  border: white 1px solid;
+  height: 50px;
+  left: 0px;
+  position: relative;
+  top: 0px;
+  width: 50px;
+}
+
+#ck-output {
+  
+}
