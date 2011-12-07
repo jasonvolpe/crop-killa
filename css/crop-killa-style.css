@@ -4,24 +4,24 @@
   padding: 0px;
 }
 
-#ck-output, 
-#ck-source {
+#ck-out-box,
+#ck-src-box {
   color: white;
   background-repeat: no-repeat;
   margin: 0px;
 }
 
-#ck-source > #crop-box {
+#ck-src-box > #ck-crop-box {
   border: white 1px solid;
   cursor: pointer;
   height: 50px;
   left: 0px;
-  position: relative;
+  position: absolute;
   top: 0px;
   width: 50px;
 }
 
-#ck-source > #crop-box > #resize {
+#ck-src-box > #ck-crop-box > #resize {
   border: yellow 1px solid;
   bottom: 0px;
   cursor: se-resize;
@@ -31,6 +31,7 @@
   width: 10px;
 }
 
-#ck-output {
-  
+#ck-src-box,
+#ck-out-box {
+  margin: 10px;
 }
